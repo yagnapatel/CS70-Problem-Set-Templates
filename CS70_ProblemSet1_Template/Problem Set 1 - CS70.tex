@@ -1,0 +1,391 @@
+\documentclass{article}
+\usepackage{amsmath,amssymb,amsthm}
+\newtheorem*{prop}{Proposition}
+\renewcommand{\theenumi}{\alph{enumi}}
+\usepackage[shortlabels]{enumitem}
+\usepackage{mdframed}
+\usepackage{tikz}
+\usetikzlibrary{matrix,calc}
+
+% DO NOT MAKE ANY CHANGES HERE%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\implicantsol}[3][0]{
+    \draw[rounded corners=3pt, fill=#3, opacity=0.3] ($(#2.north west)+(135:#1)$) rectangle ($(#2.south east)+(-45:#1)$);
+    }
+
+
+%internal group
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - top left node
+%#3 - bottom right node
+%#4 - filling color
+\newcommand{\implicant}[4][0]{
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(#2.north west)+(135:#1)$) rectangle ($(#3.south east)+(-45:#1)$);
+    }
+
+%group lateral borders
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - top left node
+%#3 - bottom right node
+%#4 - filling color
+\newcommand{\implicantcostats}[4][0]{
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(rf.east |- #2.north)+(90:#1)$)-| ($(#2.east)+(0:#1)$) |- ($(rf.east |- #3.south)+(-90:#1)$);
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(cf.west |- #2.north)+(90:#1)$) -| ($(#3.west)+(180:#1)$) |- ($(cf.west |- #3.south)+(-90:#1)$);
+}
+
+%group top-bottom borders
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - top left node
+%#3 - bottom right node
+%#4 - filling color
+\newcommand{\implicantdaltbaix}[4][0]{
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(cf.south -| #2.west)+(180:#1)$) |- ($(#2.south)+(-90:#1)$) -| ($(cf.south -| #3.east)+(0:#1)$);
+    \draw[rounded corners=3pt, fill=#4, opacity=0.3] ($(rf.north -| #2.west)+(180:#1)$) |- ($(#3.north)+(90:#1)$) -| ($(rf.north -| #3.east)+(0:#1)$);
+}
+
+%group corners
+%#1 - Optional. Space between node and grouping line. Default=0
+%#2 - filling color
+\newcommand{\implicantcantons}[2][0]{
+    \draw[rounded corners=3pt, opacity=.3] ($(rf.east |- 0.south)+(-90:#1)$) -| ($(0.east |- cf.south)+(0:#1)$);
+    \draw[rounded corners=3pt, opacity=.3] ($(rf.east |- 8.north)+(90:#1)$) -| ($(8.east |- rf.north)+(0:#1)$);
+    \draw[rounded corners=3pt, opacity=.3] ($(cf.west |- 2.south)+(-90:#1)$) -| ($(2.west |- cf.south)+(180:#1)$);
+    \draw[rounded corners=3pt, opacity=.3] ($(cf.west |- 10.north)+(90:#1)$) -| ($(10.west |- rf.north)+(180:#1)$);
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(rf.east |- 0.south)+(-90:#1)$) -|  ($(0.east |- cf.south)+(0:#1)$) [sharp corners] ($(rf.east |- 0.south)+(-90:#1)$) |-  ($(0.east |- cf.south)+(0:#1)$) ;
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(rf.east |- 8.north)+(90:#1)$) -| ($(8.east |- rf.north)+(0:#1)$) [sharp corners] ($(rf.east |- 8.north)+(90:#1)$) |- ($(8.east |- rf.north)+(0:#1)$) ;
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(cf.west |- 2.south)+(-90:#1)$) -| ($(2.west |- cf.south)+(180:#1)$) [sharp corners]($(cf.west |- 2.south)+(-90:#1)$) |- ($(2.west |- cf.south)+(180:#1)$) ;
+    \fill[rounded corners=3pt, fill=#2, opacity=.3] ($(cf.west |- 10.north)+(90:#1)$) -| ($(10.west |- rf.north)+(180:#1)$) [sharp corners] ($(cf.west |- 10.north)+(90:#1)$) |- ($(10.west |- rf.north)+(180:#1)$) ;
+}
+%Empty Karnaugh map 4x4
+\newenvironment{Karnaugh}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (4,4);
+\draw (0,4) -- node [pos=0.8,above right,anchor=south west] {CD} node [pos=0.8,below left,anchor=north east] {AB} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+        column sep={0.8cm,between origins},
+        row sep={0.8cm,between origins},
+        every node/.style={minimum size=0.3mm},
+        anchor=8.center,
+        ampersand replacement=\&] at (0.5,0.5)
+{
+                       \& |(c00)| 00         \& |(c01)| 01         \& |(c11)| 11         \& |(c10)| 10         \& |(cf)| \phantom{00} \\
+|(r00)| 00             \& |(0)|  \phantom{0} \& |(1)|  \phantom{0} \& |(3)|  \phantom{0} \& |(2)|  \phantom{0} \&                     \\
+|(r01)| 01             \& |(4)|  \phantom{0} \& |(5)|  \phantom{0} \& |(7)|  \phantom{0} \& |(6)|  \phantom{0} \&                     \\
+|(r11)| 11             \& |(12)| \phantom{0} \& |(13)| \phantom{0} \& |(15)| \phantom{0} \& |(14)| \phantom{0} \&                     \\
+|(r10)| 10             \& |(8)|  \phantom{0} \& |(9)|  \phantom{0} \& |(11)| \phantom{0} \& |(10)| \phantom{0} \&                     \\
+|(rf) | \phantom{00}   \&                    \&                    \&                    \&                    \&                     \\
+};
+}%
+{
+\end{tikzpicture}
+}
+%Empty Karnaugh map 2x4
+\newenvironment{Karnaughvuit}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (4,2);
+\draw (0,2) -- node [pos=0.8,above right,anchor=south west] {BC} node [pos=0.8,below left,anchor=north east] {A} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+        column sep={0.8cm,between origins},
+        row sep={0.8cm,between origins},
+        every node/.style={minimum size=0.3mm},
+        anchor=4.center,
+        ampersand replacement=\&] at (0.5,0.5)
+{
+                      \& |(c00)| 00         \& |(c01)| 01         \& |(c11)| 11         \& |(c10)| 10         \& |(cf)| \phantom{00} \\
+|(r00)| 0             \& |(0)|  \phantom{0} \& |(1)|  \phantom{0} \& |(3)|  \phantom{0} \& |(2)|  \phantom{0} \&                     \\
+|(r01)| 1             \& |(4)|  \phantom{0} \& |(5)|  \phantom{0} \& |(7)|  \phantom{0} \& |(6)|  \phantom{0} \&                     \\
+|(rf) | \phantom{00}  \&                    \&                    \&                    \&                    \&                     \\
+};
+}%
+{
+\end{tikzpicture}
+}
+%Empty Karnaugh map 2x2
+\newenvironment{Karnaughquatre}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (2,2);
+\draw (0,2) -- node [pos=0.7,above right,anchor=south west] {b} node [pos=0.7,below left,anchor=north east] {a} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+        column sep={0.8cm,between origins},
+        row sep={0.8cm,between origins},
+        every node/.style={minimum size=0.3mm},
+        anchor=2.center,
+        ampersand replacement=\&] at (0.5,0.5)
+{
+          \& |(c00)| 0          \& |(c01)| 1  \\
+|(r00)| 0 \& |(0)|  \phantom{0} \& |(1)|  \phantom{0} \\
+|(r01)| 1 \& |(2)|  \phantom{0} \& |(3)|  \phantom{0} \\
+};
+}%
+{
+\end{tikzpicture}
+}
+%Defines 8 or 16 values (0,1,X)
+\newcommand{\contingut}[1]{%
+\foreach \x [count=\xi from 0]  in {#1}
+     \path (\xi) node {\x};
+}
+%Places 1 in listed positions
+\newcommand{\minterms}[1]{%
+    \foreach \x in {#1}
+        \path (\x) node {1};
+}
+%Places 0 in listed positions
+\newcommand{\maxterms}[1]{%
+    \foreach \x in {#1}
+        \path (\x) node {0};
+}
+%Places X in listed positions
+\newcommand{\indeterminats}[1]{%
+    \foreach \x in {#1}
+        \path (\x) node {X};
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%% Document Starts Here %%%
+
+\usepackage[margin=0.75in]{geometry}
+
+\title{Problem Set 1}
+\author{Name:$\quad$SID: }
+\date{Spring 2016$\quad$GSI: }
+\begin{document}
+\maketitle
+
+\subsection*{1. Wason's Experiment}
+Suppose we have four cards on a table: \begin{itemize}
+  \setlength\itemsep{0em}
+  \item 1st about Alice, 2nd about Bob, 3rd about Charlie, and 4th about Donna.
+  \item For each person, one side of the card indicates their dessert, the other what they did after dinner.
+  \item Theory: "If a person has ice cream for dessert, he/she has to do the dishes after dinner."
+  \item Cards: Alice: fruit, Bob: watched TV, Charlie: ice cream, Donna: did dishes
+\end{itemize}
+Whose cards do you have to flip to test the theory?
+\begin{mdframed} 
+\textbf{Solution}
+
+\end{mdframed}
+
+\subsection*{2. Prove or Disprove}
+% To create a truth table, use the \begin{center}\begin{tabular}    \end{tabular}\end{center}. 
+Prove or disprove the following:\begin{enumerate}
+\item  $A\lor(B\land C)\equiv(A\lor B)\land (A\lor C)$
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item  $A\land(B\lor C)\equiv (A\land B)\lor (A\land C)$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item $A\implies (B\land C)\equiv (A\implies B)\land (A\implies C)$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item $A\implies (B\lor C)\equiv (A\implies B)\lor (A\implies C)$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\end{enumerate}
+
+\subsection*{3. Equivalences}
+Determine whether the following equivalences hold, and give brief justifications for your
+answers. Clearly state whether or not each pair is equivalent.
+\begin{enumerate}
+\item $\forall x\,\exists y\,(P(x)\Rightarrow Q(x,y))\equiv \forall x\,(P(x)\Rightarrow(\exists y\,Q(x,y)))$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item $\lnot\exists x\,\forall y\,(P(x)\Rightarrow\lnot Q(x,y))\equiv \forall x\,\exists y\,(P(x)\land Q(x,y))$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item $\forall x\,\exists y\,(Q(x,y)\Rightarrow P(x))\equiv \forall x\,((\exists y\, Q(x,y))\Rightarrow P(x))$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\end{enumerate}
+
+\subsection*{4. Propositions}
+Decide whether each of the following propositions is true, when the domain for $x$ and $y$ is
+the real numbers $\mathbb R$. Prove your answers.
+\begin{enumerate}
+\item $\forall x\,\exists y\,(xy>0\Rightarrow y>0)$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item $\lnot\forall x\,\exists y\,(xy\ge x^2)$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item $\exists y\,\forall x\,(xy\ge x^2)$
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\end{enumerate}
+
+
+\subsection*{5. Magical World}
+Here are statements about a magical world:
+\begin{enumerate}[I]
+\item Duck Dynasty viewers don't read the candidates' positions.
+\item No one, who votes, ever fails to do their homework (on the issues).
+\item No one is well-informed, if he or she is confused.
+\item Everyone who has done their homework (on the issues) is well-informed.
+\item A person is always confused if he or she doesn't read the candidates positions.
+\item No one wears a party hat, unless he or she votes.
+\end{enumerate}
+\begin{enumerate}
+\item Write each of the above six sentences as a quantified proposition over the universe of all people. You should use the following symbols for the various elementary propositions: $V(x)$ for "$x$ votes", $H(x)$ for "$x$ has done their homework", $W(x)$ for "$x$ is well-informed", $C(x)$ for "$x$ is confused", $D(x)$ for "$x$ is a Duck Dynasty viewer", $I(x)$ for "$x$ doesn't read the candidates' positions", and $P(x)$ for "$x$ wears a party hat".
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item Now rewrite each proposition equivalently using the contrapositive.
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\item  You now have twelve propositions in total. What can you conclude from them about
+a person who wears a party hat? Explain clearly the implications you used to arrive at your
+conclusion.
+\begin{mdframed}
+\textbf{Solution}
+\end{mdframed}
+\end{enumerate}
+
+
+\subsection*{6. Karnaugh Maps}
+Below is the truth table where $F$ is encoded as $0$ and $T$ is encoded as $1$ for the boolean function
+$$Y\equiv(\lnot A\land \lnot B\land C)\lor(\lnot A\land B\land \lnot C)\lor (A\land \lnot B\land C)\lor (A\land B\land C)$$
+\begin{center}
+\begin{tabular}{ c|c|c||c } 
+
+ A & B & C & Y \\ 
+  \hline
+ 0&0&0&0 \\ 
+ 0&0&1&1\\
+ 0&1&0&1\\
+ 0&1&1&0\\
+ 1&0&0&0\\
+ 1&0&1&1\\
+ 1&1&0&0\\
+ 1&1&1&1\\
+\end{tabular}
+\end{center}
+In this question, we will explore a different way of representing a truth table, the \textit{Karnaugh map}. A Karnaugh map is just a grid-like representation of a truth table, but as we will see, the mode of presentation can give more insight. The values inside the squares are copied from the output column of the truth table, so there is one square in the map for every row in the truth table.
+\\
+\\
+Around the edge of the Karnaugh map are the values of the input variables, where again $F$ is encoded as $0$ and $T$ is encoded is $1$. Note that the sequence of numbers across the top of the map is not in binary sequence, which would be $00, 01, 10, 11$. It is instead $00, 01, 11, 10$, which is called \textit{Gray code} sequence. Gray code sequence only changes one binary bit as we go from one number to the next in the sequence. That means that adjacent cells will only vary by one bit, or Boolean variable. In other words, \textit{cells sharing common Boolean variable values are adjacent}.
+\\
+\\
+For example, here is the Karnaugh map for $Y$: 
+\\   
+    $$\begin{Karnaughvuit}
+       \minterms{1,2,5,7}
+        \maxterms{0,3,4,6}
+    \end{Karnaughvuit}$$
+ \\
+The Karnaugh map provides a simple and straight-forward method of minimizing boolean expressions by visual inspection. The technique is to examine the Karnaugh map for any groups of adjacent ones that occur, which can be combined to simplify the expression. Note that "adjacent" here means in the modular sense, so adjacency wraps around the top/bottom and left/right of the Karnaugh map; for example, the top-most cell of a column is adjacent to the bottom-most cell of the column.
+\\
+\\
+For example, the ones in the second column in the Karnaugh map above can be combined because $(\lnot A\land \lnot B\land C)\lor (A\land C)\lor (\lnot A\land B\land \lnot C)$ simplifies to $(\lnot B\land C)$. Applying this technique to the Karnaugh map (illustrated below), we obtain the following simplified expression for $Y$:
+$$Y=(\lnot B\land C)\lor(A\land C)\lor(\lnot A\land B\land \lnot C)$$
+$$\begin{Karnaughvuit}
+        \minterms{1,2,5,7}
+        \maxterms{0,3,4,6}
+       \implicant{2}{2}{blue}
+       \implicant{5}{7}{green}
+       \implicant{1}{5}{orange}
+    \end{Karnaughvuit}$$
+
+\begin{enumerate}
+\item Write the truth table for the boolean function $$Z=(\lnot A\land \lnot B\land \lnot C\land \lnot D)\lor(\lnot A\land \lnot B\land C\land\lnot D)\lor(A\land \lnot B\land \lnot C\land \lnot D)\lor(A\land \lnot B\land C\land \lnot D)$$
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item Using your truth table from Part 1, fill in the Karnaugh map for $Z$ below 
+$$\begin{Karnaugh}
+
+    \end{Karnaugh}$$
+\begin{mdframed}
+\textbf{Solution}
+$$\begin{Karnaugh}
+
+    \end{Karnaugh}$$
+\end{mdframed}
+\item Using your Karnaugh map from Part 2, write down a simplified expression for $Z$.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item Show that this simplification could also be found algebraically by factoring the expression for $Z$ in (1). (Recall the distributive property of multiplication over addition; think about the distributive property of $\land$ over $\lor$.)
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\end{enumerate}
+
+\subsection*{7. Proof by?}
+\begin{enumerate}
+\item Prove that if $x,y,a\in\mathbb Z$, if $a$ does not divide $xy$, then $a$ does not divide $x$ and $a$ does not divide $y$. In notation: $(\forall x,y\in\mathbb Z) a\nmid xy\implies (a\nmid x\land a\nmid y)$. What proof technique did you use?
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item Prove or disprove the contrapositive.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item Prove or disprove the converse.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\end{enumerate}
+
+
+\subsection*{8. Prove or Disprove}
+\begin{enumerate}
+\item For all natural numbers $n$, if $n$ is odd then $n^2 + 3n$ is even.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item For all natural numbers $n, n^2 + 7n$ is even.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item For all real numbers $a,b$, if $a+b\ge10$ then $a\ge7$ or $b\ge3$.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item For all real numbers $r$, if $r$ is irrational then $r + 1$ is irrational.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item For all natural numbers $n, 10n^2 > n!$.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\item For all natural numbers $a$ where $a^5$ is odd, then $a$ is odd.
+\begin{mdframed}
+\textbf{Solution}
+
+\end{mdframed}
+\end{enumerate}
+
+
+
+\end{document}
